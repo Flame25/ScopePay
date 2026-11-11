@@ -1,0 +1,15 @@
+# Go
+backend/*.db
+backend/scope_pay.db
+
+# Node / Vite
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Env
+.env
+.env.local
+
+# OS
+.DS_Store
