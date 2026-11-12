@@ -6,13 +6,16 @@ import (
 	"time"
 
 	"github.com/gadzz/scopepay/internal/config"
+	"github.com/gadzz/scopepay/internal/httpx"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
 func New(cfg config.Config, database *gorm.DB) *gin.Engine {
-	r := gin.Default()
+	r := gin.New()
+
+	r.Use(httpx.RequestID(), gin.Logger(), httpx.Recovery())
 
 	origins := []string{"http://localhost:5173"}
 	if v := os.Getenv("CORS_ORIGINS"); v != "" {
