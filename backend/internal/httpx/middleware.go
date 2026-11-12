@@ -43,7 +43,6 @@ func Recovery() gin.HandlerFunc {
 				if !c.Writer.Written() {
 					Error(c, http.StatusInternalServerError, ErrorBody{Code: CodeInternal, Message: "internal error"})
 				}
-
 			}
 
 		}()

@@ -10,12 +10,22 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+
+	"github.com/gadzz/scopepay/internal/handlers"
+	"github.com/gadzz/scopepay/internal/service"
+	gormstore "github.com/gadzz/scopepay/internal/store/gorm"
 )
 
 func New(cfg config.Config, database *gorm.DB) *gin.Engine {
 	r := gin.New()
 
+	// Middleware setup
 	r.Use(httpx.RequestID(), gin.Logger(), httpx.Recovery())
+
+	// Databse for project setup
+	projectStore := gormstore.NewProjectStore(database)
+	projectSvc := service.NewProjectService(projectStore)
+	projectHandler := handlers.NewProjectHandler(projectSvc)
 
 	origins := []string{"http://localhost:5173"}
 	if v := os.Getenv("CORS_ORIGINS"); v != "" {
@@ -39,6 +49,8 @@ func New(cfg config.Config, database *gorm.DB) *gin.Engine {
 			"db":     cfg.DBDriver,
 		})
 	})
+
+	r.POST("/projects", projectHandler.Create)
 
 	return r
 }
