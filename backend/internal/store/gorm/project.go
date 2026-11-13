@@ -32,13 +32,16 @@ func (s *ProjectStore) Create(ctx context.Context, p *models.Project) error {
 
 func (s *ProjectStore) GetByID(ctx context.Context, id uint) (*models.Project, error) {
 	var out models.Project
-	err := s.db.WithContext(ctx).First(&out, id).Error
+
+	err := s.db.WithContext(ctx).Preload("Milestones").First(&out, id).Error
+
 	if err != nil {
 		if errors.Is(err, pgorm.ErrRecordNotFound) {
 			return nil, httpx.ErrNotFound
 		}
 		return nil, err
 	}
+
 	return &out, nil
 }
 
@@ -46,4 +49,8 @@ func (s *ProjectStore) ListByOwner(ctx context.Context, ownerID uint) ([]models.
 	var out []models.Project
 	err := s.db.WithContext(ctx).Where("freelancer_id = ?", ownerID).Order("created_at desc").Find(&out).Error
 	return out, err
+}
+
+func (s *ProjectStore) Update(ctx context.Context, p *models.Project) error {
+	return s.db.WithContext(ctx).Save(p).Error
 }

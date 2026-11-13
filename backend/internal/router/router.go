@@ -51,6 +51,9 @@ func New(cfg config.Config, database *gorm.DB) *gin.Engine {
 	})
 
 	r.POST("/projects", projectHandler.Create)
+	r.GET("/projects/:id", projectHandler.Get)
+	r.GET("/projects", projectHandler.List)
+	r.PATCH("/projects/:id", projectHandler.Update)
 
 	return r
 }
