@@ -21,7 +21,7 @@ func Open(cfg config.Config) (*gorm.DB, error) {
 		return nil, fmt.Errorf("unsupported DB_DRIVER %q", cfg.DBDriver)
 	}
 
-	gdb, err := gorm.Open(dialector, &gorm.Config{})
+	gdb, err := gorm.Open(dialector, &gorm.Config{TranslateError: true})
 	if err != nil {
 		return nil, err
 	}

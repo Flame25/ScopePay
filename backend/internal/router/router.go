@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/gadzz/scopepay/internal/auth"
 	"github.com/gadzz/scopepay/internal/config"
 	"github.com/gadzz/scopepay/internal/httpx"
 	"github.com/gin-contrib/cors"
@@ -26,6 +27,10 @@ func New(cfg config.Config, database *gorm.DB) *gin.Engine {
 	projectStore := gormstore.NewProjectStore(database)
 	projectSvc := service.NewProjectService(projectStore)
 	projectHandler := handlers.NewProjectHandler(projectSvc, cfg.PublicBaseURL)
+
+	userStore := gormstore.NewUserStore(database)
+	authSvc := service.NewAuthService(userStore, cfg.JWTSecret)
+	authHandler := handlers.NewAuthHandler(authSvc)
 
 	origins := []string{"http://localhost:5173"}
 	if v := os.Getenv("CORS_ORIGINS"); v != "" {
@@ -50,11 +55,18 @@ func New(cfg config.Config, database *gorm.DB) *gin.Engine {
 		})
 	})
 
-	r.POST("/projects", projectHandler.Create)
-	r.GET("/projects/:id", projectHandler.Get)
-	r.GET("/projects", projectHandler.List)
-	r.PATCH("/projects/:id", projectHandler.Update)
-	r.POST("/projects/:id/send", projectHandler.Send)
+	// Project Endpoint
+	projects := r.Group("/projects", auth.RequireAuth(cfg.JWTSecret))
+	projects.POST("", projectHandler.Create)
+	projects.GET("", projectHandler.List)
+	projects.GET("/:id", projectHandler.Get)
+	projects.PATCH("/:id", projectHandler.Update)
+	projects.POST("/:id/send", projectHandler.Send)
+
+	// User & Auth Endpoint
+	r.POST("/auth/register", authHandler.Register)
+	r.POST("/auth/login", authHandler.Login)
+	r.GET("/auth/me", auth.RequireAuth(cfg.JWTSecret), authHandler.Me)
 
 	return r
 }
