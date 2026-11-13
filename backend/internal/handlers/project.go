@@ -12,11 +12,12 @@ import (
 )
 
 type ProjectHandler struct {
-	svc *service.ProjectService
+	svc           *service.ProjectService
+	publicBaseURL string
 }
 
-func NewProjectHandler(svc *service.ProjectService) *ProjectHandler {
-	return &ProjectHandler{svc: svc}
+func NewProjectHandler(svc *service.ProjectService, publicBaseURL string) *ProjectHandler {
+	return &ProjectHandler{svc: svc, publicBaseURL: publicBaseURL}
 }
 
 func (h *ProjectHandler) Create(c *gin.Context) {
@@ -91,4 +92,22 @@ func (h *ProjectHandler) Update(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, p)
+}
+
+func (h *ProjectHandler) Send(c *gin.Context) {
+	id64, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		httpx.Error(c, http.StatusBadRequest, httpx.ErrorBody{
+			Code: httpx.CodeBadRequest, Message: "invalid project id",
+		})
+		return
+	}
+	p, err := h.svc.Send(c.Request.Context(), 1, uint(id64))
+
+	if err != nil {
+		httpx.WriteError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, dto.SendProjectResponse{ShareURL: h.publicBaseURL + "/share/" + p.ShareToken})
 }

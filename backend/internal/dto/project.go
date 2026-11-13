@@ -13,3 +13,7 @@ type UpdateProjectRequest struct {
 	Title        *string `json:"title"        binding:"omitempty,max=200"`
 	ScopeSummary *string `json:"scopeSummary" binding:"omitempty,max=5000"`
 }
+
+type SendProjectResponse struct {
+	ShareURL string `json:"shareUrl"`
+}

@@ -105,3 +105,26 @@ func (s *ProjectService) Update(ctx context.Context, ownerID, id uint, req dto.U
 
 	return p, nil
 }
+
+func (s *ProjectService) Send(ctx context.Context, ownerID, id uint) (*models.Project, error) {
+	p, err := s.Get(ctx, ownerID, id)
+	if err != nil {
+		return nil, err
+	}
+
+	if p.Status != models.ProjectDraft {
+		return nil, httpx.ErrConflict
+	}
+
+	if len(p.Milestones) == 0 {
+		return nil, httpx.ErrConflict
+	}
+
+	p.Status = models.ProjectSent
+
+	if err := s.projects.Update(ctx, p); err != nil {
+		return nil, err
+	}
+
+	return p, nil
+}
