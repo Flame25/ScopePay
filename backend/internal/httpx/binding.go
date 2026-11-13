@@ -3,6 +3,8 @@ package httpx
 import (
 	"errors"
 	"fmt"
+	"reflect"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -33,14 +35,45 @@ func messageFor(fe validator.FieldError) string {
 	}
 }
 
+func jsonNameMap(dst any) map[string]string {
+	out := map[string]string{}
+	t := reflect.TypeOf(dst)
+	for t != nil && t.Kind() == reflect.Pointer {
+		t = t.Elem()
+	}
+	if t == nil || t.Kind() != reflect.Struct {
+		return out
+	}
+	for i := 0; i < t.NumField(); i++ {
+		f := t.Field(i)
+		if !f.IsExported() {
+			continue
+		}
+		tag := f.Tag.Get("json")
+		name := strings.Split(tag, ",")[0]
+		if name == "" || name == "-" {
+			name = f.Name
+		}
+		out[f.Name] = name
+	}
+	return out
+}
+
 func fieldErrors(dst any, err error) map[string]string {
 	var verrs validator.ValidationErrors
 	if !errors.As(err, &verrs) {
 		return map[string]string{"body": "must be valid JSON matching the expected shape"}
 	}
+
+	names := jsonNameMap(dst)
 	out := make(map[string]string, len(verrs))
 	for _, fe := range verrs {
-		out[fe.Field()] = messageFor(fe)
+		key := fe.Field()
+		if name, ok := names[key]; ok {
+			key = name
+		}
+		out[key] = messageFor(fe)
+
 	}
 	return out
 }

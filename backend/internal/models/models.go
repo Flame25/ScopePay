@@ -15,10 +15,10 @@ const (
 type MilestoneStatus string
 
 const (
-	MilestonePending        MilestoneStatus = "pending"
-	MilestoneAwaitingPay    MilestoneStatus = "awaiting_payment"
-	MilestonePaid           MilestoneStatus = "paid"
-	MilestoneDelivered      MilestoneStatus = "delivered"
+	MilestonePending     MilestoneStatus = "pending"
+	MilestoneAwaitingPay MilestoneStatus = "awaiting_payment"
+	MilestonePaid        MilestoneStatus = "paid"
+	MilestoneDelivered   MilestoneStatus = "delivered"
 )
 
 type PaymentStatus string
@@ -47,7 +47,7 @@ type Project struct {
 	Title        string        `json:"title"`
 	ScopeSummary string        `gorm:"type:text" json:"scopeSummary"`
 	Status       ProjectStatus `gorm:"type:varchar(32);default:draft" json:"status"`
-	ShareToken   string        `gorm:"uniqueIndex" json:"shareToken"`
+	ShareToken   string        `gorm:"uniqueIndex" json:"-"`
 	Milestones   []Milestone   `json:"milestones,omitempty"`
 	CreatedAt    time.Time     `json:"createdAt"`
 	UpdatedAt    time.Time     `json:"updatedAt"`
@@ -81,11 +81,11 @@ type Payment struct {
 }
 
 type WebhookEvent struct {
-	ID             uint       `gorm:"primaryKey" json:"id"`
-	PayPalEventID  string     `gorm:"uniqueIndex;not null" json:"paypalEventId"`
-	Type           string     `json:"type"`
-	Verified       bool       `json:"verified"`
-	ProcessedAt    *time.Time `json:"processedAt,omitempty"`
-	RawJSON        string     `gorm:"type:text" json:"-"`
-	CreatedAt      time.Time  `json:"createdAt"`
+	ID            uint       `gorm:"primaryKey" json:"id"`
+	PayPalEventID string     `gorm:"uniqueIndex;not null" json:"paypalEventId"`
+	Type          string     `json:"type"`
+	Verified      bool       `json:"verified"`
+	ProcessedAt   *time.Time `json:"processedAt,omitempty"`
+	RawJSON       string     `gorm:"type:text" json:"-"`
+	CreatedAt     time.Time  `json:"createdAt"`
 }

@@ -25,7 +25,7 @@ func New(cfg config.Config, database *gorm.DB) *gin.Engine {
 	// Databse for project setup
 	projectStore := gormstore.NewProjectStore(database)
 	projectSvc := service.NewProjectService(projectStore)
-	projectHandler := handlers.NewProjectHandler(projectSvc)
+	projectHandler := handlers.NewProjectHandler(projectSvc, cfg.PublicBaseURL)
 
 	origins := []string{"http://localhost:5173"}
 	if v := os.Getenv("CORS_ORIGINS"); v != "" {
@@ -51,6 +51,10 @@ func New(cfg config.Config, database *gorm.DB) *gin.Engine {
 	})
 
 	r.POST("/projects", projectHandler.Create)
+	r.GET("/projects/:id", projectHandler.Get)
+	r.GET("/projects", projectHandler.List)
+	r.PATCH("/projects/:id", projectHandler.Update)
+	r.POST("/projects/:id/send", projectHandler.Send)
 
 	return r
 }
