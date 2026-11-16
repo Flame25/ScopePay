@@ -32,6 +32,10 @@ func New(cfg config.Config, database *gorm.DB) *gin.Engine {
 	authSvc := service.NewAuthService(userStore, cfg.JWTSecret)
 	authHandler := handlers.NewAuthHandler(authSvc)
 
+	milestoneStore := gormstore.NewMilestoneStore(database)
+	milestoneSvc := service.NewMilestoneService(milestoneStore, projectStore)
+	milestoneHandler := handlers.NewMilestoneHandler(milestoneSvc)
+
 	origins := []string{"http://localhost:5173"}
 	if v := os.Getenv("CORS_ORIGINS"); v != "" {
 		origins = []string{}
@@ -62,6 +66,10 @@ func New(cfg config.Config, database *gorm.DB) *gin.Engine {
 	projects.GET("/:id", projectHandler.Get)
 	projects.PATCH("/:id", projectHandler.Update)
 	projects.POST("/:id/send", projectHandler.Send)
+	projects.POST("/:id/milestones", milestoneHandler.Create)
+	projects.GET("/:id/milestones", milestoneHandler.List)
+	projects.PATCH("/:id/milestones/:mid", milestoneHandler.Update)
+	projects.DELETE("/:id/milestones/:mid", milestoneHandler.Delete)
 
 	// User & Auth Endpoint
 	r.POST("/auth/register", authHandler.Register)

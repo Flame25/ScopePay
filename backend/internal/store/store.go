@@ -18,3 +18,11 @@ type UserStore interface {
 	GetByEmail(ctx context.Context, email string) (*models.User, error)
 	GetByID(ctx context.Context, id uint) (*models.User, error)
 }
+
+type MilestoneStore interface {
+	Create(ctx context.Context, m *models.Milestone) error
+	Update(ctx context.Context, m *models.Milestone) error
+	Delete(ctx context.Context, id uint) error
+	GetByID(ctx context.Context, id uint) (*models.Milestone, error)
+	ListByProject(ctx context.Context, projectID uint) ([]models.Milestone, error)
+}
