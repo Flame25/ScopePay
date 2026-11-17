@@ -21,6 +21,11 @@ func NewProjectHandler(svc *service.ProjectService, publicBaseURL string) *Proje
 }
 
 func (h *ProjectHandler) Create(c *gin.Context) {
+	ownerID, ok := currentUserID(c)
+	if !ok {
+		return
+	}
+
 	var req dto.CreateProjectRequest
 	err := httpx.BindJSON(c, &req)
 	if err != nil {
@@ -28,7 +33,7 @@ func (h *ProjectHandler) Create(c *gin.Context) {
 		return
 	}
 
-	p, err := h.svc.Create(c.Request.Context(), 1, req)
+	p, err := h.svc.Create(c.Request.Context(), ownerID, req)
 	if err != nil {
 		httpx.WriteError(c, err)
 		return
@@ -37,6 +42,11 @@ func (h *ProjectHandler) Create(c *gin.Context) {
 }
 
 func (h *ProjectHandler) Get(c *gin.Context) {
+	ownerID, ok := currentUserID(c)
+	if !ok {
+		return
+	}
+
 	id64, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
 		httpx.Error(c, http.StatusBadRequest, httpx.ErrorBody{
@@ -44,7 +54,7 @@ func (h *ProjectHandler) Get(c *gin.Context) {
 		})
 		return
 	}
-	p, err := h.svc.Get(c.Request.Context(), 1, uint(id64))
+	p, err := h.svc.Get(c.Request.Context(), ownerID, uint(id64))
 
 	if err != nil {
 		httpx.WriteError(c, err)
@@ -55,8 +65,12 @@ func (h *ProjectHandler) Get(c *gin.Context) {
 }
 
 func (h *ProjectHandler) List(c *gin.Context) {
+	ownerID, ok := currentUserID(c)
+	if !ok {
+		return
+	}
 
-	projects, err := h.svc.List(c.Request.Context(), 1)
+	projects, err := h.svc.List(c.Request.Context(), ownerID)
 	if err != nil {
 		httpx.WriteError(c, err)
 		return
@@ -69,6 +83,10 @@ func (h *ProjectHandler) List(c *gin.Context) {
 }
 
 func (h *ProjectHandler) Update(c *gin.Context) {
+	ownerID, ok := currentUserID(c)
+	if !ok {
+		return
+	}
 
 	id64, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
@@ -84,7 +102,7 @@ func (h *ProjectHandler) Update(c *gin.Context) {
 		return
 	}
 
-	p, err := h.svc.Update(c.Request.Context(), 1, uint(id64), req)
+	p, err := h.svc.Update(c.Request.Context(), ownerID, uint(id64), req)
 
 	if err != nil {
 		httpx.WriteError(c, err)
@@ -95,6 +113,11 @@ func (h *ProjectHandler) Update(c *gin.Context) {
 }
 
 func (h *ProjectHandler) Send(c *gin.Context) {
+	ownerID, ok := currentUserID(c)
+	if !ok {
+		return
+	}
+
 	id64, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
 		httpx.Error(c, http.StatusBadRequest, httpx.ErrorBody{
@@ -102,7 +125,7 @@ func (h *ProjectHandler) Send(c *gin.Context) {
 		})
 		return
 	}
-	p, err := h.svc.Send(c.Request.Context(), 1, uint(id64))
+	p, err := h.svc.Send(c.Request.Context(), ownerID, uint(id64))
 
 	if err != nil {
 		httpx.WriteError(c, err)
@@ -110,4 +133,14 @@ func (h *ProjectHandler) Send(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, dto.SendProjectResponse{ShareURL: h.publicBaseURL + "/share/" + p.ShareToken})
+}
+
+func currentUserID(c *gin.Context) (uint, bool) {
+	id, ok := httpx.UserID(c)
+	if !ok {
+		httpx.Error(c, http.StatusUnauthorized, httpx.ErrorBody{
+			Code: httpx.CodeUnauthorized, Message: "unauthenticated",
+		})
+	}
+	return id, ok
 }
