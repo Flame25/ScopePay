@@ -1,4 +1,4 @@
-import { request, type ApiError, BASE_URL, requestVoid } from "./client";
+import { request, requestVoid } from "./client";
 import { authHeaders } from "./auth";
 
 export type ProjectStatus = "draft" | "sent" | "approved" | "in_progress" | "complete";

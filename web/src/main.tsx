@@ -8,6 +8,8 @@ import Register from "./pages/Register";
 import "./styles.css";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Projects from "./pages/Projects";
+import NewProject from "./pages/NewProject";
+import ProjectDetail from "./pages/ProjectDetail";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -19,6 +21,8 @@ createRoot(document.getElementById("root")!).render(
           <Route path="/register" element={<Register />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/projects" element={<Projects />} />
+            <Route path="/projects/new" element={<NewProject />} />
+            <Route path="/projects/:id" element={<ProjectDetail />} />
           </Route>
         </Routes>
       </AuthProvider>

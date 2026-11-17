@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { request, type ApiError } from "../api/client";
-import { authHeaders } from "../api/auth";
+import { useNavigate, Link } from "react-router-dom";
+import { type ApiError } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
+import { listProjects } from "../api/projects";
 
 type Project = { id: number; clientName: string; title: string; status: string };
 
@@ -13,7 +13,7 @@ export default function Projects() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    request<Project[]>("/projects", { headers: authHeaders() })
+    listProjects()
       .then(setItems)
       .catch((e) => setError((e as ApiError).error?.message ?? "failed to load"));
   }, []);
@@ -24,6 +24,7 @@ export default function Projects() {
         <h1>Projects</h1>
         <div className="head-actions">
           <span className="muted">{user?.email}</span>
+          <Link to="/projects/new" className="btn-primary">New project</Link>
           <button className="btn-primary" onClick={() => { logout(); navigate("/login"); }}>Logout</button>
         </div>
       </header>
@@ -33,10 +34,10 @@ export default function Projects() {
 
       <div className="card-container">
         {items?.map((p) => (
-          <div className="card" key={p.id}>
+          <Link to={`/projects/${p.id}`} className="card card-link" key={p.id}>
             <strong>{p.title || p.clientName}</strong>
             <p className="muted">{p.clientName} · {p.status}</p>
-          </div>
+          </Link>
         ))}
         {items?.length === 0 && <p className="muted">No projects yet.</p>}
       </div>
