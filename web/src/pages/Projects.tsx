@@ -20,13 +20,26 @@ export default function Projects() {
 
   return (
     <main className="page">
-      <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h1> Projects </h1>
-        <span className="muted">{user?.email} </span>
-        <button className="btn-primary" onClick={() => { logout(); navigate("/login"); }}>
-          Logout
-        </button>
+      <header className="page-head">
+        <h1>Projects</h1>
+        <div className="head-actions">
+          <span className="muted">{user?.email}</span>
+          <button className="btn-primary" onClick={() => { logout(); navigate("/login"); }}>Logout</button>
+        </div>
       </header>
-    </main >
+
+      {error && <p className="form-error">{error}</p>}
+      {!items && !error && <p className="muted">Loading…</p>}
+
+      <div className="card-container">
+        {items?.map((p) => (
+          <div className="card" key={p.id}>
+            <strong>{p.title || p.clientName}</strong>
+            <p className="muted">{p.clientName} · {p.status}</p>
+          </div>
+        ))}
+        {items?.length === 0 && <p className="muted">No projects yet.</p>}
+      </div>
+    </main>
   );
 }

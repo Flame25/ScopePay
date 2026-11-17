@@ -171,3 +171,8 @@ h1 {
 
 .form-foot a { color: #4b5ee4; text-decoration: none; font-weight: 500; }
 .form-foot a:hover { text-decoration: underline; }
+
+.page-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.page-head h1 { margin: 0; }
+.head-actions { display: flex; align-items: center; gap: 0.75rem; }
+.head-actions .btn-primary { padding: 0.4rem 0.8rem; font-size: 0.875rem; }

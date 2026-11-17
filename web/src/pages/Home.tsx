@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { getHealth, type ApiError, type HealthResponse } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
-import Login from "./Login";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../api/auth";
 
 export default function Home() {
   const [health, setHealth] = useState<HealthResponse | null>(null);
