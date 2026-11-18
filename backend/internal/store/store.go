@@ -11,6 +11,7 @@ type ProjectStore interface {
 	ListByOwner(ctx context.Context, ownerID uint) ([]models.Project, error)
 	GetByID(ctx context.Context, id uint) (*models.Project, error)
 	Update(ctx context.Context, p *models.Project) error
+	GetByShareToken(ctx context.Context, token string) (*models.Project, error)
 }
 
 type UserStore interface {

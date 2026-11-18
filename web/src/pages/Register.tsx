@@ -61,7 +61,7 @@ export default function Register() {
 
         {error && <p className="form-error">{error}</p>}
 
-        <button type="submit" className="btn-primary" disabled={submitting}>
+        <button type="submit" className="btn btn-primary" disabled={submitting}>
           {submitting ? "Creating…" : "Create account"}
         </button>
 
@@ -69,6 +69,6 @@ export default function Register() {
           Already registered? <Link to="/login">Sign in</Link>
         </p>
       </form>
-    </main>
+    </main >
   );
 }

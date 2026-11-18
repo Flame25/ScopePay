@@ -128,3 +128,22 @@ func (s *ProjectService) Send(ctx context.Context, ownerID, id uint) (*models.Pr
 
 	return p, nil
 }
+
+func (s *ProjectService) Unlock(ctx context.Context, ownerID, id uint) (*models.Project, error) {
+	p, err := s.Get(ctx, ownerID, id)
+	if err != nil {
+		return nil, err
+	}
+
+	if p.Status != models.ProjectRevision {
+		return nil, httpx.NewStateError("no change request is pending")
+	}
+
+	p.Status = models.ProjectDraft
+	p.EditRequestNote = ""
+
+	if err := s.projects.Update(ctx, p); err != nil {
+		return nil, err
+	}
+	return p, nil
+}

@@ -45,6 +45,8 @@ func Error(c *gin.Context, status int, body ErrorBody) {
 
 func WriteError(c *gin.Context, err error) {
 	var ve *ValidationError
+	var se *StateError
+
 	switch {
 	case errors.As(err, &ve):
 		Error(c, http.StatusUnprocessableEntity, ErrorBody{
@@ -52,6 +54,8 @@ func WriteError(c *gin.Context, err error) {
 			Message: "invalid input",
 			Fields:  ve.Fields,
 		})
+	case errors.As(err, &se):
+		Error(c, http.StatusConflict, ErrorBody{Code: CodeConflict, Message: se.Message})
 	case errors.Is(err, ErrUnauthorized):
 		Error(c, http.StatusUnauthorized, ErrorBody{
 			Code: CodeUnauthorized, Message: "authentication required",
