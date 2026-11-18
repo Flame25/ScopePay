@@ -9,6 +9,7 @@ const (
 	ProjectSent       ProjectStatus = "sent"
 	ProjectApproved   ProjectStatus = "approved"
 	ProjectInProgress ProjectStatus = "in_progress"
+	ProjectRevision   ProjectStatus = "revision_requested"
 	ProjectComplete   ProjectStatus = "complete"
 )
 
@@ -40,18 +41,19 @@ type User struct {
 }
 
 type Project struct {
-	ID           uint          `gorm:"primaryKey" json:"id"`
-	FreelancerID uint          `gorm:"index;not null" json:"freelancerId"`
-	ClientName   string        `json:"clientName"`
-	ClientEmail  string        `json:"clientEmail"`
-	RawRequest   string        `gorm:"type:text" json:"rawRequest"`
-	Title        string        `json:"title"`
-	ScopeSummary string        `gorm:"type:text" json:"scopeSummary"`
-	Status       ProjectStatus `gorm:"type:varchar(32);default:draft" json:"status"`
-	ShareToken   string        `gorm:"uniqueIndex" json:"-"`
-	Milestones   []Milestone   `json:"milestones,omitempty"`
-	CreatedAt    time.Time     `json:"createdAt"`
-	UpdatedAt    time.Time     `json:"updatedAt"`
+	ID              uint          `gorm:"primaryKey" json:"id"`
+	FreelancerID    uint          `gorm:"index;not null" json:"freelancerId"`
+	ClientName      string        `json:"clientName"`
+	ClientEmail     string        `json:"clientEmail"`
+	RawRequest      string        `gorm:"type:text" json:"rawRequest"`
+	Title           string        `json:"title"`
+	ScopeSummary    string        `gorm:"type:text" json:"scopeSummary"`
+	EditRequestNote string        `gorm:"type:text" json:"editRequestNote"`
+	Status          ProjectStatus `gorm:"type:varchar(32);default:draft" json:"status"`
+	ShareToken      string        `gorm:"uniqueIndex" json:"shareToken"`
+	Milestones      []Milestone   `json:"milestones,omitempty"`
+	CreatedAt       time.Time     `json:"createdAt"`
+	UpdatedAt       time.Time     `json:"updatedAt"`
 }
 
 type Milestone struct {

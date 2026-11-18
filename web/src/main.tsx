@@ -6,10 +6,13 @@ import Home from "./pages/Home";
 import Login from "./pages/Login"
 import Register from "./pages/Register";
 import "./styles.css";
+import "./styles/ui.css";
+import "./styles/app.css";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Projects from "./pages/Projects";
 import NewProject from "./pages/NewProject";
 import ProjectDetail from "./pages/ProjectDetail";
+import Share from "./pages/Share";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -19,6 +22,7 @@ createRoot(document.getElementById("root")!).render(
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/share/:token" element={<Share />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/projects" element={<Projects />} />
             <Route path="/projects/new" element={<NewProject />} />

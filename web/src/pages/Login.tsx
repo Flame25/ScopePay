@@ -43,7 +43,7 @@ export default function Login() {
 
         {error && <p className="form-error">{error}</p>}
 
-        <button type="submit" className="btn-primary" disabled={submitting}>
+        <button type="submit" className="btn btn-primary" disabled={submitting}>
           {submitting ? "Signing in…" : "Sign in"}
         </button>
 
@@ -51,7 +51,7 @@ export default function Login() {
           No account? <Link to="/register">Create one</Link>
         </p>
       </form>
-    </main>
+    </main >
   );
 
 }

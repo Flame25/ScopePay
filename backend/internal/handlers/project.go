@@ -144,3 +144,20 @@ func currentUserID(c *gin.Context) (uint, bool) {
 	}
 	return id, ok
 }
+
+func (h *ProjectHandler) Unlock(c *gin.Context) {
+	ownerID, ok := currentUserID(c)
+	if !ok {
+		return
+	}
+	id, ok := parseUintParam(c, "id")
+	if !ok {
+		return
+	}
+	p, err := h.svc.Unlock(c.Request.Context(), ownerID, id)
+	if err != nil {
+		httpx.WriteError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, p)
+}

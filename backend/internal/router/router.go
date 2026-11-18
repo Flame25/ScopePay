@@ -36,6 +36,9 @@ func New(cfg config.Config, database *gorm.DB) *gin.Engine {
 	milestoneSvc := service.NewMilestoneService(milestoneStore, projectStore)
 	milestoneHandler := handlers.NewMilestoneHandler(milestoneSvc)
 
+	shareSvc := service.NewShareService(projectStore, userStore)
+	shareHandler := handlers.NewShareHandler(shareSvc)
+
 	origins := []string{"http://localhost:5173"}
 	if v := os.Getenv("CORS_ORIGINS"); v != "" {
 		origins = []string{}
@@ -70,11 +73,18 @@ func New(cfg config.Config, database *gorm.DB) *gin.Engine {
 	projects.GET("/:id/milestones", milestoneHandler.List)
 	projects.PATCH("/:id/milestones/:mid", milestoneHandler.Update)
 	projects.DELETE("/:id/milestones/:mid", milestoneHandler.Delete)
+	projects.POST("/:id/unlock", projectHandler.Unlock)
 
 	// User & Auth Endpoint
 	r.POST("/auth/register", authHandler.Register)
 	r.POST("/auth/login", authHandler.Login)
 	r.GET("/auth/me", auth.RequireAuth(cfg.JWTSecret), authHandler.Me)
+
+	// Share Token
+	share := r.Group("/share", auth.RequireAuth(cfg.JWTSecret))
+	share.GET("/:token", shareHandler.Get)
+	share.POST("/:token/approve", shareHandler.Approve)
+	share.POST("/:token/request-changes", shareHandler.RequestChanges)
 
 	return r
 }

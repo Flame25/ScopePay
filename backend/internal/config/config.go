@@ -30,7 +30,7 @@ func Load() Config {
 		DevMode:       env("DEV_MODE", "1") == "1",
 		DBDriver:      env("DB_DRIVER", "sqlite"),
 		DBDSN:         env("DB_DSN", "scope_pay.db"),
-		PublicBaseURL: env("PUBLIC_BASE_URL", "http://localhost:8080"),
+		PublicBaseURL: env("PUBLIC_BASE_URL", "http://localhost:5173"),
 		JWTSecret:     env("JWT_SECRET", ""),
 	}
 

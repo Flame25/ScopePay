@@ -1,7 +1,7 @@
 import { request, requestVoid } from "./client";
 import { authHeaders } from "./auth";
 
-export type ProjectStatus = "draft" | "sent" | "approved" | "in_progress" | "complete";
+export type ProjectStatus = "draft" | "sent" | "approved" | "revision_requested" | "in_progress" | "complete";
 
 export type Milestone = {
   id: number;
@@ -22,7 +22,9 @@ export type Project = {
   rawRequest: string;
   title: string;
   scopeSummary: string;
+  editRequestNote: string;
   status: ProjectStatus;
+  shareToken?: string;
   milestones?: Milestone[];
   createdAt: string;
   updatedAt: string;
@@ -88,3 +90,6 @@ export function deleteMilestone(projectId: number, mid: number): Promise<void> {
   });
 }
 
+export function unlockProject(id: number): Promise<Project> {
+  return request<Project>(`/projects/${id}/unlock`, { method: "POST", headers: authHeaders() });
+}

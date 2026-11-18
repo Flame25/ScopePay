@@ -47,8 +47,20 @@ func (s *ProjectStore) GetByID(ctx context.Context, id uint) (*models.Project, e
 
 func (s *ProjectStore) ListByOwner(ctx context.Context, ownerID uint) ([]models.Project, error) {
 	var out []models.Project
-	err := s.db.WithContext(ctx).Where("freelancer_id = ?", ownerID).Order("created_at desc").Find(&out).Error
+	err := s.db.WithContext(ctx).Preload("Milestones").Where("freelancer_id = ?", ownerID).Order("created_at desc").Find(&out).Error
 	return out, err
+}
+
+func (s *ProjectStore) GetByShareToken(ctx context.Context, token string) (*models.Project, error) {
+	var out models.Project
+	err := s.db.WithContext(ctx).Preload("Milestones").Where("share_token = ?", token).First(&out).Error
+	if err != nil {
+		if errors.Is(err, pgorm.ErrRecordNotFound) {
+			return nil, httpx.ErrNotFound
+		}
+		return nil, err
+	}
+	return &out, nil
 }
 
 func (s *ProjectStore) Update(ctx context.Context, p *models.Project) error {
