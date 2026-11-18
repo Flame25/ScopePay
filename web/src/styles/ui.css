@@ -1,0 +1,490 @@
+/* Shared design system: tokens + primitives.
+   Loaded after styles.css in main.tsx, so these rules win over legacy ones. */
+
+:root {
+  --accent: #4b5ee4;
+  --accent-hover: #3a4ccc;
+  --accent-soft: #eef1fe;
+  --accent-soft-ink: #3846b8;
+  --ink: #14141a;
+  --ink-soft: #5c5c6b;
+  --ink-faint: #86868f;
+  --line: #e6e6ee;
+  --line-strong: #d0d0d8;
+  --surface: #ffffff;
+  --surface-sunken: #fcfcfe;
+  --page-bg: #f7f7fa;
+  --danger: #b00020;
+  --danger-soft: #fff5f5;
+  --danger-line: #f3c0c0;
+  --ok: #1d7a41;
+  --ok-soft: #eaf7ee;
+  --ok-line: #cbe9d6;
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --shadow: 0 1px 2px rgba(20, 20, 26, 0.04);
+  --shadow-hover: 0 2px 10px rgba(75, 94, 228, 0.07);
+}
+
+body {
+  background: var(--page-bg);
+  color: var(--ink);
+}
+
+/* ---------- shell ---------- */
+
+.ui-shell {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 5rem;
+}
+
+.ui-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.ui-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.ui-mark {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.ui-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+
+/* ---------- page hero ---------- */
+
+.page-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  padding: 2rem 0 1.5rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.55rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.page-title {
+  margin: 0;
+  font-size: clamp(1.7rem, 3.4vw, 2.3rem);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+}
+
+.page-sub {
+  margin: 0.7rem 0 0;
+  font-size: 0.98rem;
+  color: var(--ink-soft);
+  max-width: 60ch;
+  overflow-wrap: anywhere;
+}
+
+.page-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+.back-link:hover { color: var(--accent); }
+
+/* ---------- status pills ---------- */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid #e2e2ea;
+  background: #f2f2f6;
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.pill-draft       { background: #f2f2f6; color: #5c5c6b; border-color: #e2e2ea; }
+.pill-sent        { background: var(--accent-soft); color: var(--accent-soft-ink); border-color: #d6dcfc; }
+.pill-approved    { background: var(--ok-soft); color: var(--ok); border-color: var(--ok-line); }
+.pill-in_progress { background: #fdf3e3; color: #8a5a00; border-color: #f4e2c3; }
+.pill-complete    { background: #eeeafa; color: #5533b3; border-color: #ddd4f7; }
+
+/* ---------- blocks ---------- */
+
+.block {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.block-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.block-head h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.block-meta {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+/* ---------- milestones ---------- */
+
+.milestone-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.milestone-item {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  gap: 1rem;
+  align-items: start;
+  padding: 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-sunken);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.milestone-item:hover {
+  border-color: #cfd6fb;
+  box-shadow: var(--shadow-hover);
+}
+
+.milestone-index {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent-soft-ink);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.milestone-body h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.milestone-body p {
+  margin: 0.3rem 0 0;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.milestone-meta {
+  display: inline-block;
+  margin-top: 0.55rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  background: #f2f3f9;
+  border: 1px solid #e6e7f1;
+  font-size: 0.78rem;
+  color: #4a4a5c;
+}
+
+.milestone-amount {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.ms-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.ms-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.1rem;
+  padding-top: 0.9rem;
+  border-top: 1px dashed var(--line);
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+.ms-total strong {
+  font-size: 1.15rem;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- feedback ---------- */
+
+.alert {
+  margin: 0 0 1.25rem;
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius);
+  background: var(--danger-soft);
+  border: 1px solid var(--danger-line);
+  color: var(--danger);
+  font-size: 0.9rem;
+}
+
+.empty {
+  margin: 0;
+  padding: 1.25rem;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+}
+
+.skeleton {
+  border-radius: var(--radius-lg);
+  background: linear-gradient(90deg, #f2f2f7 25%, #f8f8fc 50%, #f2f2f7 75%);
+  background-size: 200% 100%;
+  animation: ui-shimmer 1.3s infinite;
+}
+
+@keyframes ui-shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+/* ---------- buttons ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.55rem 0.95rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.06s;
+}
+.btn:hover:not(:disabled) { background: #f0f0f5; }
+.btn:active:not(:disabled) { transform: translateY(1px); }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.btn-primary {
+  border-color: transparent;
+  background: var(--accent);
+  color: #fff;
+}
+.btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+
+.btn-ghost {
+  border-color: transparent;
+  background: transparent;
+  color: var(--ink-soft);
+}
+.btn-ghost:hover:not(:disabled) { background: #f0f0f5; color: var(--ink); }
+
+.btn-danger {
+  border-color: #f0c4c4;
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+.btn-danger:hover:not(:disabled) { background: #ffe9e9; border-color: #e8a9a9; }
+
+.btn-sm {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.82rem;
+  border-radius: var(--radius-sm);
+}
+
+/* ---------- forms ---------- */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.83rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--ink-soft);
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 400;
+  background: var(--surface);
+  color: var(--ink);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 5rem;
+  line-height: 1.55;
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(75, 94, 228, 0.15);
+}
+
+.field input::placeholder,
+.field textarea::placeholder { color: #a0a0ad; }
+
+.field-hint {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--ink-faint);
+}
+
+.save-note {
+  margin-right: auto;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ok);
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 0.18s, transform 0.18s;
+}
+.save-note:not(:empty) {
+  opacity: 1;
+  transform: none;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.field-grid > * { min-width: 0; }
+
+@media (min-width: 720px) {
+  .field-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1.25rem;
+}
+
+/* ---------- misc ---------- */
+
+.quote {
+  margin: 0;
+  padding: 1rem 1.15rem;
+  border-left: 3px solid var(--line-strong);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: #fafaff;
+  color: var(--ink-soft);
+  font-size: 0.93rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 560px) {
+  .milestone-item { grid-template-columns: 28px 1fr; }
+  .ms-side {
+    grid-column: 2;
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .form-actions { justify-content: stretch; }
+  .form-actions .btn { flex: 1; }
+}
