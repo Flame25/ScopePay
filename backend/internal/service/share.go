@@ -14,76 +14,91 @@ type ShareService struct {
 	users    store.UserStore
 }
 
+const (
+	RoleClient     = "client"
+	RoleFreelancer = "freelancer"
+)
+
+func roleFor(p *models.Project, u *models.User) string {
+	if p.FreelancerID == u.ID {
+		return RoleFreelancer
+	}
+	return RoleClient
+}
+
 func NewShareService(projects store.ProjectStore, users store.UserStore) *ShareService {
 	return &ShareService{projects: projects, users: users}
 }
 
-func (s *ShareService) Get(ctx context.Context, token string, userID uint) (*models.Project, error) {
+func (s *ShareService) Get(ctx context.Context, token string, userID uint) (*models.Project, string, error) {
+	u, err := s.users.GetByID(ctx, userID)
+	if err != nil {
+		return nil, "", err
+	}
+
 	if token == "" {
-		return nil, httpx.ErrNotFound
+		return nil, "", httpx.ErrNotFound
 	}
 
 	p, err := s.projects.GetByShareToken(ctx, token)
 	if err != nil {
-		return nil, err
-	}
-
-	u, err := s.users.GetByID(ctx, userID)
-	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	if !strings.EqualFold(u.Email, p.ClientEmail) && p.FreelancerID != userID {
-		return nil, httpx.ErrForbidden
+		return nil, "", httpx.ErrForbidden
 	}
 
-	return p, nil
-
+	return p, roleFor(p, u), nil
 }
 
-func (s *ShareService) Approve(ctx context.Context, token string, userID uint) (*models.Project, error) {
-	p, err := s.Get(ctx, token, userID)
+func (s *ShareService) Approve(ctx context.Context, token string, userID uint) (*models.Project, string, error) {
+	p, role, err := s.Get(ctx, token, userID)
 	if err != nil {
-		return nil, err
+		return nil, "", err
+	}
+
+	if role != RoleClient {
+		return nil, "", httpx.NewForbiddenError("only the client can approve this proposal")
 	}
 
 	switch p.Status {
 	case models.ProjectSent:
 		//ok
 	case models.ProjectApproved:
-		return p, nil
+		return p, role, nil
 	default:
-		return nil, httpx.ErrConflict
+		return nil, "", httpx.NewStateError("only a sent proposal can be approved")
 	}
 
 	p.Status = models.ProjectApproved
 	if err := s.projects.Update(ctx, p); err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
-	return p, nil
+	return p, role, nil
 }
 
-func (s *ShareService) RequestChanges(ctx context.Context, token string, userID uint, note string) (*models.Project, error) {
-	p, err := s.Get(ctx, token, userID)
+func (s *ShareService) RequestChanges(ctx context.Context, token string, userID uint, note string) (*models.Project, string, error) {
+	p, role, err := s.Get(ctx, token, userID)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	switch p.Status {
-	case models.ProjectApproved, models.ProjectInProgress:
+	case models.ProjectSent, models.ProjectApproved, models.ProjectInProgress:
 		// ok
 	case models.ProjectRevision:
-		return p, nil
+		return p, role, nil
 	default:
-		return nil, httpx.NewStateError("only an approved proposal can be reopened for changes")
+		return nil, "", httpx.NewStateError("this proposal can no longer be reopened for changes")
 	}
 
 	p.Status = models.ProjectRevision
 	p.EditRequestNote = note
 
 	if err := s.projects.Update(ctx, p); err != nil {
-		return nil, err
+		return nil, "", err
 	}
-	return p, nil
+	return p, role, nil
 }

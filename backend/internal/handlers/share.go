@@ -23,12 +23,12 @@ func (h *ShareHandler) Get(c *gin.Context) {
 		return
 	}
 
-	p, err := h.svc.Get(c.Request.Context(), c.Param("token"), ownerID)
+	p, role, err := h.svc.Get(c.Request.Context(), c.Param("token"), ownerID)
 	if err != nil {
 		httpx.WriteError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, dto.NewShareProjectResponse(p))
+	c.JSON(http.StatusOK, dto.NewShareProjectResponse(p, role))
 }
 
 func (h *ShareHandler) Approve(c *gin.Context) {
@@ -37,12 +37,12 @@ func (h *ShareHandler) Approve(c *gin.Context) {
 		return
 	}
 
-	p, err := h.svc.Approve(c.Request.Context(), c.Param("token"), ownerID)
+	p, role, err := h.svc.Approve(c.Request.Context(), c.Param("token"), ownerID)
 	if err != nil {
 		httpx.WriteError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, dto.NewShareProjectResponse(p))
+	c.JSON(http.StatusOK, dto.NewShareProjectResponse(p, role))
 }
 
 func (h *ShareHandler) RequestChanges(c *gin.Context) {
@@ -57,10 +57,10 @@ func (h *ShareHandler) RequestChanges(c *gin.Context) {
 		return
 	}
 
-	p, err := h.svc.RequestChanges(c.Request.Context(), c.Param("token"), userID, req.Note)
+	p, role, err := h.svc.RequestChanges(c.Request.Context(), c.Param("token"), userID, req.Note)
 	if err != nil {
 		httpx.WriteError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, dto.NewShareProjectResponse(p))
+	c.JSON(http.StatusOK, dto.NewShareProjectResponse(p, role))
 }

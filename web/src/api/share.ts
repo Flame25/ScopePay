@@ -2,13 +2,17 @@ import { authHeaders } from "./auth";
 import { request } from "./client";
 import type { Milestone, ProjectStatus } from "./projects";
 
+
+export type ShareViewerRole = "client" | "freelancer";
+
 export type ShareProject = {
   title: string;
   clientName: string;
   scopeSummary: string;
   status: ProjectStatus;
-  milestones: Milestone[];
   editRequestNote: string;
+  viewerRole: ShareViewerRole;
+  milestones: Milestone[];
 };
 
 export function getShare(token: string): Promise<ShareProject> {

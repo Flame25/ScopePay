@@ -46,6 +46,7 @@ func Error(c *gin.Context, status int, body ErrorBody) {
 func WriteError(c *gin.Context, err error) {
 	var ve *ValidationError
 	var se *StateError
+	var fe *ForbiddenError
 
 	switch {
 	case errors.As(err, &ve):
@@ -60,6 +61,8 @@ func WriteError(c *gin.Context, err error) {
 		Error(c, http.StatusUnauthorized, ErrorBody{
 			Code: CodeUnauthorized, Message: "authentication required",
 		})
+	case errors.As(err, &fe):
+		Error(c, http.StatusForbidden, ErrorBody{Code: CodeForbidden, Message: fe.Message})
 	case errors.Is(err, ErrForbidden):
 		Error(c, http.StatusForbidden, ErrorBody{
 			Code: CodeForbidden, Message: "forbidden access",

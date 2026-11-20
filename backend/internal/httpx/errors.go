@@ -14,3 +14,9 @@ var (
 	ErrNotFound     = errors.New("not found")
 	ErrConflict     = errors.New("conflict")
 )
+
+type ForbiddenError struct{ Message string }
+
+func (e *ForbiddenError) Error() string { return e.Message }
+
+func NewForbiddenError(msg string) error { return &ForbiddenError{Message: msg} }

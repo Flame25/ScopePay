@@ -40,6 +40,8 @@ export default function Share() {
     setError(null);
     try {
       setData(await requestChanges(token, note));
+      setShowRequest(false);
+      setNote("");
     } catch (e) {
       setError((e as ApiError).error?.message ?? "failed to request changes");
     } finally {
@@ -79,7 +81,10 @@ export default function Share() {
     <main className="ui-shell share-page">
       <div className="ui-topbar">
         <span className="ui-brand"><span className="ui-mark">S</span>ScopePay</span>
-        <span className={`pill pill-${statusTone(data.status)}`}>{statusText(data.status)}</span>
+        <div className="ui-nav">
+          <span className="block-meta">{data.viewerRole === "client" ? "Client view" : "Freelancer view"}</span>
+          <span className={`pill pill-${statusTone(data.status)}`}>{statusText(data.status)}</span>
+        </div>
       </div>
 
       <header className="share-hero">
@@ -134,16 +139,52 @@ export default function Share() {
       </section>
 
       <div className="share-actions">
-        {data.status === "sent" && (
+        {data.status === "sent" && data.viewerRole === "client" && (
           <>
             <div className="share-actions-copy">
               <strong>Ready to proceed?</strong>
               <p>Approving confirms the scope and milestone amounts above.</p>
             </div>
+
             <button className="share-cta" onClick={handleApprove} disabled={busy}>
               {busy ? "Approving…" : "Approve proposal"}
             </button>
+
+            {!showRequest && (
+              <button className="btn btn-sm" onClick={() => setShowRequest(true)}>Request changes instead</button>
+            )}
           </>
+        )}
+
+        {data.status === "sent" && data.viewerRole === "freelancer" && (
+          <>
+            <div className="share-actions-copy">
+              <strong>Sent to {data.clientName}</strong>
+              <p>Waiting for the client to review and approve. You can still request changes.</p>
+            </div>
+            <button className="btn btn-sm" onClick={() => setShowRequest(true)}>Request changes</button>
+          </>
+        )}
+
+        {showRequest && (
+          <div className="share-request">
+            <label className="field">
+              What should change?
+              <textarea
+                rows={3}
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder="e.g. split milestone 2, and add a final QA pass"
+                maxLength={2000}
+              />
+            </label>
+            <div className="form-actions">
+              <button className="btn btn-ghost btn-sm" onClick={() => setShowRequest(false)}>Cancel</button>
+              <button className="btn btn-sm" onClick={handleRequestChanges} disabled={busy}>
+                {busy ? "Sending…" : "Send request"}
+              </button>
+            </div>
+          </div>
         )}
 
         {data.status === "approved" && (
@@ -153,26 +194,7 @@ export default function Share() {
               Proposal approved — milestones can now be invoiced.
             </div>
 
-            {showRequest ? (
-              <div className="share-request">
-                <label className="field">
-                  What should change?
-                  <textarea
-                    rows={3}
-                    value={note}
-                    onChange={(e) => setNote(e.target.value)}
-                    placeholder="e.g. split milestone 2, and add a final QA pass"
-                    maxLength={2000}
-                  />
-                </label>
-                <div className="form-actions">
-                  <button className="btn btn-ghost btn-sm" onClick={() => setShowRequest(false)}>Cancel</button>
-                  <button className="btn btn-sm" onClick={handleRequestChanges} disabled={busy}>
-                    {busy ? "Sending…" : "Send request"}
-                  </button>
-                </div>
-              </div>
-            ) : (
+            {!showRequest && (
               <button className="btn btn-sm" onClick={() => setShowRequest(true)}>Request changes</button>
             )}
           </>

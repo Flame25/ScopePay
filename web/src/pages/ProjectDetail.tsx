@@ -17,6 +17,7 @@ export default function ProjectDetail() {
   const [formError, setFormError] = useState<string | null>(null);
   const [msForm, setMsForm] = useState({ title: "", amount: "", deliverables: "", acceptanceCriteria: "" });
   const [msError, setMsError] = useState<string | null>(null);
+  const [msSaving, setMsSaving] = useState(false);
 
   useEffect(() => {
     getProject(projectId)
@@ -67,6 +68,7 @@ export default function ProjectDetail() {
 
   async function handleAddMilestone() {
     setMsError(null);
+    setMsSaving(true);
     try {
       await createMilestone(projectId, {
         title: msForm.title,
@@ -79,6 +81,8 @@ export default function ProjectDetail() {
     } catch (e) {
       const apiErr = (e as ApiError).error;
       setMsError(Object.values(apiErr?.fields ?? {})[0] ?? apiErr?.message ?? "failed to add milestone");
+    } finally {
+      setMsSaving(false);
     }
   }
 
@@ -348,19 +352,13 @@ export default function ProjectDetail() {
               </label>
               {msError && <p className="alert">{msError}</p>}
               <div className="form-actions">
-                {editable ? (
-                  <>
-                    <button className="btn btn-primary" onClick={handleAddMilestone} disabled={saving}>
-                      {saving ? "Adding…" : "Add Milestones"}
-                    </button>
-                  </>
-                ) : (
-                  <span className="block-meta">Locked after client approval</span>
-                )}
+                <button className="btn btn-primary" onClick={handleAddMilestone} disabled={msSaving}>
+                  {msSaving ? "Adding…" : "Add Milestones"}
+                </button>
               </div>
             </div>
           </details>
-            : <p className="block-meta">Milestones are locked once the client approves.</p>}`
+            : <p className="block-meta">Milestones are locked once the client approves.</p>}
         </section>
       </div >
     </main >
